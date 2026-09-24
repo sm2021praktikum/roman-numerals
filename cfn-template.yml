@@ -37,9 +37,14 @@ Resources:
         - Key: Name
           Value: !Sub "Web Server of ${AWS::StackName}"
 
-      UserData:
+         UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
           dnf update -y
           dnf install -y python3 python3-pip git
           pip3 install flask
+
+          cd /home/ec2-user
+          git clone https://github.com/sm2021praktikum/roman-numerals.git
+          cd roman-numerals
+          python3 app.py
