@@ -1,11 +1,11 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Description: Roman Numerals Converter Flask Application
+
 Parameters:
   KeyPairName:
     Description: Name of an existing EC2 KeyPair
     Type: AWS::EC2::KeyPair::KeyName
-
-  LatestAmiId:
-    Type: AWS::SSM::Parameter::Value<AWS::EC2::Image::Id>
-    Default: /aws/service/ami-amazon-linux-latest/al2023-ami-kernel-default-x86_64
 
 Resources:
   WebServerSecurityGroup:
@@ -23,10 +23,10 @@ Resources:
           ToPort: 22
           CidrIp: 0.0.0.0/0
 
-   WebServer:
+  WebServer:
     Type: AWS::EC2::Instance
     Properties:
-      ImageId: !Ref LatestAmiId
+      ImageId: ami-0fef201115eefe936
       InstanceType: t2.micro
       KeyName: !Ref KeyPairName
 
@@ -37,7 +37,7 @@ Resources:
         - Key: Name
           Value: !Sub "Web Server of ${AWS::StackName}"
 
-         UserData:
+      UserData:
         Fn::Base64: !Sub |
           #!/bin/bash
           dnf update -y
@@ -48,3 +48,8 @@ Resources:
           git clone https://github.com/sm2021praktikum/roman-numerals.git
           cd roman-numerals
           python3 app.py
+
+Outputs:
+  WebsiteURL:
+    Description: Roman Numerals Converter Website
+    Value: !Sub "http://${WebServer.PublicDnsName}"
